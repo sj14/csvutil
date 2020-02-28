@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"os"
 
 	"github.com/sj14/csvutil"
 )
@@ -36,7 +37,7 @@ func main() {
 		log.Fatalln(err)
 	}
 
-	if err := ds.Write(); err != nil {
+	if err := ds.Write(os.Stdout); err != nil {
 		log.Fatalln(err)
 	}
 }
