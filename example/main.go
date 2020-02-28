@@ -8,6 +8,7 @@ import (
 
 func main() {
 	log.SetFlags(log.LstdFlags | log.Llongfile)
+
 	records := [][]string{
 		{"first_name", "last_name", "username"},
 		{"Rob", "Pike", "rob"},
@@ -15,19 +16,23 @@ func main() {
 		{"Robert", "Griesemer", "gri"},
 	}
 
-	ds := csvutil.New(records)
+	ds := csvutil.New(records, true)
 
-	if err := ds.AddColumn("ASD", []string{"asd", "asd", "asd"}, 3); err != nil {
+	if err := ds.AddColumn([]string{"asd", "1", "2", "3"}, 1); err != nil {
+		log.Fatalln(err)
+	}
+
+	if err := ds.RenameColumn("username", "nick"); err != nil {
 		log.Fatalln(err)
 	}
 
 	log.Println(ds.Raw())
 
-	if err := ds.DeleteColumn("username"); err != nil {
+	if err := ds.DeleteColumn("nick"); err != nil {
 		log.Fatalln(err)
 	}
 
-	if err := ds.WriteAll(); err != nil {
+	if err := ds.Write(); err != nil {
 		log.Fatalln(err)
 	}
 }
