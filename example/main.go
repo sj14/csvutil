@@ -26,9 +26,13 @@ func main() {
 		log.Fatalln(err)
 	}
 
-	log.Println(ds.Raw())
+	// log.Println(ds.Raw())
 
 	if err := ds.DeleteColumn("nick"); err != nil {
+		log.Fatalln(err)
+	}
+
+	if err := ds.DeleteColumnID(-2); err != nil {
 		log.Fatalln(err)
 	}
 

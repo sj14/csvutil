@@ -24,6 +24,20 @@ func New(dataset [][]string, header bool) Dataset {
 	return ds
 }
 
+func (ds *Dataset) DeleteColumnID(index int) error {
+	// -1 deletes last column
+	// -2 deletes second last column
+	// ...
+	if index < 0 {
+		index += len(ds.data[0])
+	}
+
+	for idxRow, _ := range ds.data {
+		ds.data[idxRow] = append(ds.data[idxRow][:index], ds.data[idxRow][index+1:]...)
+	}
+	return nil
+}
+
 func (ds *Dataset) DeleteColumn(name string) error {
 	idxToDelete := -1
 	for idxCol, col := range ds.data[0] {
@@ -36,10 +50,7 @@ func (ds *Dataset) DeleteColumn(name string) error {
 		return errors.New("column not found")
 	}
 
-	for idxRow, _ := range ds.data {
-		ds.data[idxRow] = append(ds.data[idxRow][:idxToDelete], ds.data[idxRow][idxToDelete+1:]...)
-	}
-	return nil
+	return ds.DeleteColumnID(idxToDelete)
 }
 
 func (ds *Dataset) RenameColumn(old, new string) error {
@@ -116,6 +127,9 @@ func (ds *Dataset) AddRows(rows [][]string) error {
 func (ds *Dataset) AddColumn(column []string, index int) error {
 	// TODO: name optional as we can have a csv without header
 	// TODO: index as option
+	if index < 0 {
+		index += len(ds.data[0])
+	}
 
 	if len(ds.data) > 0 && len(column) != len(ds.data) {
 		return errors.New("column needs to have same length as existing data")
