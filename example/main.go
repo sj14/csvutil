@@ -17,6 +17,10 @@ func main() {
 
 	ds := csvutil.New(records)
 
+	if err := ds.AddColumn("ASD", []string{"asd", "asd", "asd"}, 3); err != nil {
+		log.Fatalln(err)
+	}
+
 	log.Println(ds.Raw())
 
 	if err := ds.DeleteColumn("username"); err != nil {

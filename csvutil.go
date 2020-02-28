@@ -3,6 +3,7 @@ package csvutil
 import (
 	"encoding/csv"
 	"errors"
+	"fmt"
 	"os"
 )
 
@@ -12,7 +13,7 @@ type Dataset struct {
 }
 
 func (ds *Dataset) Raw() [][]string {
-	result := append(ds.data, []string{} /* use the zero value of the element type */)
+	result := append(ds.data, []string{})
 	copy(result[1:], result[0:])
 	result[0] = ds.header
 	return result
@@ -28,8 +29,8 @@ func New(dataset [][]string) Dataset {
 }
 
 func (ds *Dataset) DeleteColumn(name string) error {
-	if len(ds.header) != len(ds.data) {
-		return errors.New("dataset not consistent")
+	if len(ds.header) != len(ds.data[0]) {
+		return fmt.Errorf("dataset not consistent: %+v\n", ds.Raw())
 	}
 
 	idxToDelete := -1
@@ -97,10 +98,42 @@ func (ds *Dataset) AddRows(rows [][]string) error {
 	return nil
 }
 
-func (ds *Dataset) AddColumn(name string, data []string) error {
-	// TODO, index as option
+func (ds *Dataset) AddColumn(name string, column []string, index int) error {
+	// TODO: name optional as we can have a csv without header
+	// TODO: index as option
+
+	if len(column) != len(ds.data) && len(ds.data) > 0 {
+		return errors.New("column needs to have same length as existing data")
+	}
+
+	// no data so far
+	if len(ds.data) == 0 {
+		ds.header = []string{name}
+		ds.data = [][]string{column}
+		return nil
+	}
+
+	// header
+	ds.header = append(ds.header, "")
+	copy(ds.header[index+1:], ds.header[index:])
+	ds.header[index] = name
+
+	for idxRow, _ := range ds.data {
+		// for idxCol, col := range row {
+		ds.data[idxRow] = append(ds.data[idxRow], "")
+		copy(ds.data[idxRow][index+1:], ds.data[idxRow][index:])
+		ds.data[idxRow][index] = column[idxRow]
+		// }
+	}
+
 	return nil
 }
+
+// func  insert(dataset [][]string, toAdd []string, index int) {
+// 	ds.data = append(ds.data, []string{})
+// 	copy(ds.data[index+1:], ds.data[index:])
+// 	ds.data[index] = toAdd
+// }
 
 func (ds *Dataset) WriteAll() error {
 	w := csv.NewWriter(os.Stdout) // output as option
