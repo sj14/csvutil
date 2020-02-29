@@ -24,6 +24,12 @@ func main() {
 		log.Fatalln(err)
 	}
 
+	lastNames, err := ds.ExtractColumn("last_name")
+	if err != nil {
+		log.Fatalln(err)
+	}
+	log.Println(lastNames)
+
 	if err := ds.RenameColumn("username", "nick"); err != nil {
 		log.Fatalln(err)
 	}

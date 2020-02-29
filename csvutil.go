@@ -185,6 +185,29 @@ func (ds *Dataset) AddColumn(column []string, index int) error {
 	return nil
 }
 
+func (ds *Dataset) ExtractColumn(name string) ([]string, error) {
+	index, err := ds.indexOfCol(name)
+	if err != nil {
+		return []string{}, err
+	}
+
+	return ds.ExtractColumnID(index)
+}
+
+func (ds *Dataset) ExtractColumnID(index int) ([]string, error) {
+	if index < 0 {
+		index += len(ds.data[0])
+	}
+
+	var resultCol []string
+
+	for _, row := range ds.data {
+		resultCol = append(resultCol, row[index])
+	}
+
+	return resultCol, nil
+}
+
 // ModifyColumn changes the values of the given column according to 'f'.
 // 'val' contains the column value and 'row' is the current row number.
 func (ds *Dataset) ModifyColumnID(index int, f func(val string, row int) string) error {
