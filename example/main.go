@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 
@@ -34,6 +35,12 @@ func main() {
 	}
 
 	if err := ds.DeleteColumnID(-2); err != nil {
+		log.Fatalln(err)
+	}
+
+	var addRowNumber = func(val string, i int) string { return fmt.Sprintf("%v (%v)", val, i) }
+
+	if err := ds.ModifyColumn("first_name", addRowNumber); err != nil {
 		log.Fatalln(err)
 	}
 

@@ -11,9 +11,10 @@ type Dataset struct {
 	data      [][]string
 }
 
-func (ds *Dataset) Raw() [][]string {
-	return ds.data
-}
+var (
+	ErrNoHeader       = errors.New("dataset is configured without header")
+	ErrColumnNotFound = errors.New("column not found")
+)
 
 // New creates a new CSV dataset.
 func New(dataset [][]string, header bool) Dataset {
@@ -24,6 +25,11 @@ func New(dataset [][]string, header bool) Dataset {
 	ds.data = dataset
 	ds.hasHeader = header
 	return ds
+}
+
+// Raw returns the raw data usable with Go's stdlib csv package.
+func (ds *Dataset) Raw() [][]string {
+	return ds.data
 }
 
 // DeleteColumnID deletes the column with the given index.
@@ -40,33 +46,36 @@ func (ds *Dataset) DeleteColumnID(index int) error {
 	return nil
 }
 
+func (ds *Dataset) indexOfCol(name string) (int, error) {
+	index := -1
+	for idxCol, col := range ds.data[0] {
+		if col == name {
+			if index != -1 {
+				return -1, errors.New("dataset contains several column with this name. aborting.")
+			}
+			index = idxCol
+		}
+	}
+	if index == -1 {
+		return -1, ErrColumnNotFound // TODO: wrap error with 'name' as help
+	}
+
+	return index, nil
+}
+
 // DeleteColumn deletes the column with the given name.
 // Requires a dataset with headers
 func (ds *Dataset) DeleteColumn(name string) error {
 	if !ds.hasHeader {
 		return ErrNoHeader
 	}
-	idxToDelete := -1
-	for idxCol, col := range ds.data[0] {
-		if col == name {
-			if idxToDelete != -1 {
-				return errors.New("dataset contains several column with this name. aborting.")
-			}
-			idxToDelete = idxCol
-		}
-	}
 
-	if idxToDelete == -1 {
-		return ErrColumnNotFound // TODO: wrap error with 'name' as help
+	idxToDelete, err := ds.indexOfCol(name)
+	if err != nil {
+		return err
 	}
-
 	return ds.DeleteColumnID(idxToDelete)
 }
-
-var (
-	ErrNoHeader       = errors.New("dataset is configured without header")
-	ErrColumnNotFound = errors.New("column not found")
-)
 
 // RenameColumn renames the header of column 'old' to 'new'.
 func (ds *Dataset) RenameColumn(old, new string) error {
@@ -74,19 +83,11 @@ func (ds *Dataset) RenameColumn(old, new string) error {
 		return ErrNoHeader
 	}
 
-	renamed := false
-	for idxCol, column := range ds.data[0] {
-		if column == old {
-			if renamed {
-				return errors.New("old column name exists multiple times")
-			}
-			ds.data[0][idxCol] = new
-			renamed = true
-		}
+	index, err := ds.indexOfCol(old)
+	if err != nil {
+		return err
 	}
-	if !renamed {
-		return ErrColumnNotFound
-	}
+	ds.data[0][index] = new
 
 	return nil
 }
@@ -184,11 +185,37 @@ func (ds *Dataset) AddColumn(column []string, index int) error {
 	return nil
 }
 
-// func  insert(dataset [][]string, toAdd []string, index int) {
-// 	ds.data = append(ds.data, []string{})
-// 	copy(ds.data[index+1:], ds.data[index:])
-// 	ds.data[index] = toAdd
-// }
+// ModifyColumn changes the values of the given column according to 'f'.
+// 'val' contains the column value and 'row' is the current row number.
+func (ds *Dataset) ModifyColumnID(index int, f func(val string, row int) string) error {
+	if index < 0 {
+		index += len(ds.data[0])
+	}
+
+	if index > len(ds.data[0]) {
+		return errors.New("index out of bounds")
+	}
+
+	for idxRow, row := range ds.data {
+		if ds.hasHeader && idxRow == 0 {
+			continue
+		}
+
+		row[index] = f(row[index], idxRow)
+	}
+	return nil
+}
+
+// ModifyColumn changes the values of column 'name' according to 'f'.
+// 'val' contains the column value and 'row' is the current row number.
+func (ds *Dataset) ModifyColumn(name string, f func(val string, row int) string) error {
+	index, err := ds.indexOfCol(name)
+	if err != nil {
+		return err
+	}
+
+	return ds.ModifyColumnID(index, f)
+}
 
 // Write the dataset to the given writer.
 func (ds *Dataset) Write(writer io.Writer) error {
