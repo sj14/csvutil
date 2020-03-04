@@ -16,6 +16,25 @@ var (
 	ErrColumnNotFound = errors.New("column not found")
 )
 
+// Equals checks if both datasets are the same.
+func Equals(datasetA, datasetB [][]string) bool {
+	if len(datasetA) != len(datasetB) {
+		return false
+	}
+	for rowIdx, rowA := range datasetA {
+		rowB := datasetB[rowIdx]
+		if len(rowA) != len(rowB) {
+			return false
+		}
+		for colIdx, _ := range rowA {
+			if rowA[colIdx] != rowB[colIdx] {
+				return false
+			}
+		}
+	}
+	return true
+}
+
 // New creates a new CSV dataset.
 func New(dataset [][]string, header bool) Dataset {
 	// dataset optional, can create an empty dataset

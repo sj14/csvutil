@@ -4,6 +4,55 @@ import (
 	"testing"
 )
 
+func TestEquals(t *testing.T) {
+
+	testCases := []struct {
+		description string
+		datasetA    [][]string
+		datasetB    [][]string
+		expected    bool
+	}{
+		{
+			description: "empty",
+			datasetA:    [][]string{[]string{}},
+			datasetB:    [][]string{[]string{}},
+			expected:    true,
+		},
+		{
+			description: "happy/2rows",
+			datasetA:    [][]string{[]string{"A", "B", "C"}, []string{"1", "2", "3"}},
+			datasetB:    [][]string{[]string{"A", "B", "C"}, []string{"1", "2", "3"}},
+			expected:    true,
+		},
+		{
+			description: "fail/2rows",
+			datasetA:    [][]string{[]string{"A", "B", "C"}, []string{"1", "99", "3"}},
+			datasetB:    [][]string{[]string{"A", "B", "C"}, []string{"1", "2", "3"}},
+			expected:    false,
+		},
+		{
+			description: "fail/row/len",
+			datasetA:    [][]string{[]string{"A", "B", "C"}, []string{"1", "2", "3"}},
+			datasetB:    [][]string{[]string{"A", "B", "C"}},
+			expected:    false,
+		},
+		{
+			description: "fail/col/len",
+			datasetA:    [][]string{[]string{"A", "B", "C"}, []string{"1", "3", "3"}},
+			datasetB:    [][]string{[]string{"A", "B", "C"}, []string{"1", "2"}},
+			expected:    false,
+		},
+	}
+
+	for _, tt := range testCases {
+		t.Run(tt.description, func(t *testing.T) {
+			if Equals(tt.datasetA, tt.datasetB) != tt.expected {
+				t.Fail()
+			}
+		})
+	}
+}
+
 func TestNew(t *testing.T) {
 	raw := [][]string{
 		[]string{"Row 1 Col 1", "Row 1 Col 2"},
@@ -11,16 +60,7 @@ func TestNew(t *testing.T) {
 	}
 	ds := New(raw, false)
 
-	if ds.Raw()[0][0] != raw[0][0] {
-		t.Fail()
-	}
-	if ds.Raw()[0][1] != raw[0][1] {
-		t.Fail()
-	}
-	if ds.Raw()[1][0] != raw[1][0] {
-		t.Fail()
-	}
-	if ds.Raw()[1][1] != raw[1][1] {
+	if !Equals(ds.Raw(), raw) {
 		t.Fail()
 	}
 }
