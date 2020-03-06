@@ -74,10 +74,6 @@ func (ds *Dataset) DeleteColumn(name string) error {
 		return err
 	}
 
-	if index < 0 {
-		index += len(ds.data[0])
-	}
-
 	for idxRow, _ := range ds.data {
 		ds.data[idxRow] = append(ds.data[idxRow][:index], ds.data[idxRow][index+1:]...)
 	}
@@ -120,7 +116,7 @@ func (ds *Dataset) AddColumn(column []string, index int) error {
 	// TODO: name optional as we can have a csv without header
 	// TODO: index as option
 	if index < 0 {
-		index += len(ds.data[0])
+		index += len(ds.data[0]) + 1
 	}
 
 	if len(ds.data) > 0 && len(column) != len(ds.data) {
@@ -148,10 +144,6 @@ func (ds *Dataset) ExtractColumn(name string) ([]string, error) {
 		return []string{}, err
 	}
 
-	if index < 0 {
-		index += len(ds.data[0])
-	}
-
 	var resultCol []string
 
 	for _, row := range ds.data {
@@ -167,10 +159,6 @@ func (ds *Dataset) ModifyColumn(name string, f func(val string, row int) string)
 	index, err := ds.indexOfCol(name)
 	if err != nil {
 		return err
-	}
-
-	if index < 0 {
-		index += len(ds.data[0])
 	}
 
 	if index > len(ds.data[0]) {
