@@ -15,6 +15,18 @@ func TestEquals(t *testing.T) {
 		expected    bool
 	}{
 		{
+			description: "nil",
+			datasetA:    nil,
+			datasetB:    nil,
+			expected:    true,
+		},
+		{
+			description: "empty/empty",
+			datasetA:    [][]string{},
+			datasetB:    [][]string{[]string{}},
+			expected:    false,
+		},
+		{
 			description: "empty",
 			datasetA:    [][]string{[]string{}},
 			datasetB:    [][]string{[]string{}},
