@@ -18,7 +18,7 @@ func main() {
 		{"Robert", "Griesemer", "gri"},
 	}
 
-	ds := csvutil.New(records, true)
+	ds := csvutil.New(records)
 
 	if err := ds.AddColumn([]string{"asd", "1", "2", "3"}, 1); err != nil {
 		log.Fatalln(err)
@@ -37,10 +37,6 @@ func main() {
 	// log.Println(ds.Raw())
 
 	if err := ds.DeleteColumn("nick"); err != nil {
-		log.Fatalln(err)
-	}
-
-	if err := ds.DeleteColumnID(-2); err != nil {
 		log.Fatalln(err)
 	}
 

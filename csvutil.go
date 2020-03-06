@@ -7,8 +7,7 @@ import (
 )
 
 type Dataset struct {
-	hasHeader bool
-	data      [][]string
+	data [][]string
 }
 
 var (
@@ -26,7 +25,7 @@ func Equals(datasetA, datasetB [][]string) bool {
 		if len(rowA) != len(rowB) {
 			return false
 		}
-		for colIdx, _ := range rowA {
+		for colIdx := range rowA {
 			if rowA[colIdx] != rowB[colIdx] {
 				return false
 			}
@@ -36,33 +35,18 @@ func Equals(datasetA, datasetB [][]string) bool {
 }
 
 // New creates a new CSV dataset.
-func New(dataset [][]string, header bool) Dataset {
+func New(dataset [][]string) Dataset {
 	// dataset optional, can create an empty dataset
 	// TODO: option if it contains a header
 	// TODO: check for duplacate column names
 	var ds Dataset
 	ds.data = dataset
-	ds.hasHeader = header
 	return ds
 }
 
 // Raw returns the raw data usable with Go's stdlib csv package.
 func (ds *Dataset) Raw() [][]string {
 	return ds.data
-}
-
-// DeleteColumnID deletes the column with the given index.
-// -1 deletes last column
-// -2 deletes second last column, and so on...
-func (ds *Dataset) DeleteColumnID(index int) error {
-	if index < 0 {
-		index += len(ds.data[0])
-	}
-
-	for idxRow, _ := range ds.data {
-		ds.data[idxRow] = append(ds.data[idxRow][:index], ds.data[idxRow][index+1:]...)
-	}
-	return nil
 }
 
 func (ds *Dataset) indexOfCol(name string) (int, error) {
@@ -85,23 +69,23 @@ func (ds *Dataset) indexOfCol(name string) (int, error) {
 // DeleteColumn deletes the column with the given name.
 // Requires a dataset with headers
 func (ds *Dataset) DeleteColumn(name string) error {
-	if !ds.hasHeader {
-		return ErrNoHeader
-	}
-
-	idxToDelete, err := ds.indexOfCol(name)
+	index, err := ds.indexOfCol(name)
 	if err != nil {
 		return err
 	}
-	return ds.DeleteColumnID(idxToDelete)
+
+	if index < 0 {
+		index += len(ds.data[0])
+	}
+
+	for idxRow, _ := range ds.data {
+		ds.data[idxRow] = append(ds.data[idxRow][:index], ds.data[idxRow][index+1:]...)
+	}
+	return nil
 }
 
 // RenameColumn renames the header of column 'old' to 'new'.
 func (ds *Dataset) RenameColumn(old, new string) error {
-	if !ds.hasHeader {
-		return ErrNoHeader
-	}
-
 	index, err := ds.indexOfCol(old)
 	if err != nil {
 		return err
@@ -109,52 +93,6 @@ func (ds *Dataset) RenameColumn(old, new string) error {
 	ds.data[0][index] = new
 
 	return nil
-}
-
-// HasHeader returns if the dataset is configured with a header.
-func (ds *Dataset) HasHeader() bool {
-	return ds.hasHeader
-}
-
-// DeleteHeader deletes the header from the dataset.
-func (ds *Dataset) DeleteHeader() error {
-	if !ds.hasHeader {
-		return ErrNoHeader
-	}
-	ds.data = ds.data[1:]
-	ds.hasHeader = false
-	return nil
-}
-
-// AddHeader adds a header to the dataset.
-func (ds *Dataset) AddHeader(header []string) error {
-	if len(header) == 0 {
-		return nil
-	}
-
-	if ds.HasHeader() {
-		return errors.New("dataset already contains a header")
-	}
-
-	// TODO: check for duplicate column names
-
-	if len(ds.data) > 0 && len(ds.data) != len(header) {
-		return errors.New("number of column names doesn't match with existing data")
-	}
-	// TODO: deny overwriting existing header, add option to allow overwriting
-	ds.data[0] = append(ds.data[0], header...)
-	ds.hasHeader = true
-	return nil
-}
-
-// Header returns the header of the dataset.
-// Returns an empty slice of strings when the dataset is
-// configured without a header or the dataset is empty.
-func (ds *Dataset) Header() []string {
-	if len(ds.data) == 0 || ds.hasHeader {
-		return []string{}
-	}
-	return ds.data[0]
 }
 
 // AddRow appends the given row to the dataset.
@@ -210,10 +148,6 @@ func (ds *Dataset) ExtractColumn(name string) ([]string, error) {
 		return []string{}, err
 	}
 
-	return ds.ExtractColumnID(index)
-}
-
-func (ds *Dataset) ExtractColumnID(index int) ([]string, error) {
 	if index < 0 {
 		index += len(ds.data[0])
 	}
@@ -227,9 +161,14 @@ func (ds *Dataset) ExtractColumnID(index int) ([]string, error) {
 	return resultCol, nil
 }
 
-// ModifyColumn changes the values of the given column according to 'f'.
+// ModifyColumn changes the values of column 'name' according to 'f'.
 // 'val' contains the column value and 'row' is the current row number.
-func (ds *Dataset) ModifyColumnID(index int, f func(val string, row int) string) error {
+func (ds *Dataset) ModifyColumn(name string, f func(val string, row int) string) error {
+	index, err := ds.indexOfCol(name)
+	if err != nil {
+		return err
+	}
+
 	if index < 0 {
 		index += len(ds.data[0])
 	}
@@ -239,24 +178,14 @@ func (ds *Dataset) ModifyColumnID(index int, f func(val string, row int) string)
 	}
 
 	for idxRow, row := range ds.data {
-		if ds.hasHeader && idxRow == 0 {
+		// skip header
+		if idxRow == 0 {
 			continue
 		}
 
 		row[index] = f(row[index], idxRow)
 	}
 	return nil
-}
-
-// ModifyColumn changes the values of column 'name' according to 'f'.
-// 'val' contains the column value and 'row' is the current row number.
-func (ds *Dataset) ModifyColumn(name string, f func(val string, row int) string) error {
-	index, err := ds.indexOfCol(name)
-	if err != nil {
-		return err
-	}
-
-	return ds.ModifyColumnID(index, f)
 }
 
 // Write the dataset to the given writer.

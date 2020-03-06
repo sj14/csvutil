@@ -5,7 +5,6 @@ import (
 )
 
 func TestEquals(t *testing.T) {
-
 	testCases := []struct {
 		description string
 		datasetA    [][]string
@@ -19,13 +18,13 @@ func TestEquals(t *testing.T) {
 			expected:    true,
 		},
 		{
-			description: "happy/2rows",
+			description: "happy",
 			datasetA:    [][]string{[]string{"A", "B", "C"}, []string{"1", "2", "3"}},
 			datasetB:    [][]string{[]string{"A", "B", "C"}, []string{"1", "2", "3"}},
 			expected:    true,
 		},
 		{
-			description: "fail/2rows",
+			description: "fail/value",
 			datasetA:    [][]string{[]string{"A", "B", "C"}, []string{"1", "99", "3"}},
 			datasetB:    [][]string{[]string{"A", "B", "C"}, []string{"1", "2", "3"}},
 			expected:    false,
@@ -58,7 +57,7 @@ func TestNew(t *testing.T) {
 		[]string{"Row 1 Col 1", "Row 1 Col 2"},
 		[]string{"Row 2 Col 1", "Row 2 Col 2"},
 	}
-	ds := New(raw, false)
+	ds := New(raw)
 
 	if !Equals(ds.Raw(), raw) {
 		t.Fail()
