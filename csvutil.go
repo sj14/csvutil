@@ -66,9 +66,8 @@ func (ds *Dataset) indexOfCol(name string) (int, error) {
 	return index, nil
 }
 
-// DeleteColumn deletes the column with the given name.
-// Requires a dataset with headers
-func (ds *Dataset) DeleteColumn(name string) error {
+// DeleteCol deletes the column with the given name.
+func (ds *Dataset) DeleteCol(name string) error {
 	index, err := ds.indexOfCol(name)
 	if err != nil {
 		return err
@@ -80,8 +79,8 @@ func (ds *Dataset) DeleteColumn(name string) error {
 	return nil
 }
 
-// RenameColumn renames the header of column 'old' to 'new'.
-func (ds *Dataset) RenameColumn(old, new string) error {
+// RenameCol renames the header of column 'old' to 'new'.
+func (ds *Dataset) RenameCol(old, new string) error {
 	index, err := ds.indexOfCol(old)
 	if err != nil {
 		return err
@@ -109,10 +108,10 @@ func (ds *Dataset) AddRows(rows [][]string) error {
 	return nil
 }
 
-// AddColumn inserts the given column at the position of the index.
+// AddCol inserts the given column at the position of the index.
 // -1 adds the column at the last column
 // -2 adds the column as the second last column, and so on...
-func (ds *Dataset) AddColumn(column []string, index int) error {
+func (ds *Dataset) AddCol(column []string, index int) error {
 	// TODO: name optional as we can have a csv without header
 	// TODO: index as option
 	if index < 0 {
@@ -138,7 +137,8 @@ func (ds *Dataset) AddColumn(column []string, index int) error {
 	return nil
 }
 
-func (ds *Dataset) ExtractColumn(name string) ([]string, error) {
+// ExtractCol returns the column with the given name.
+func (ds *Dataset) ExtractCol(name string) ([]string, error) {
 	index, err := ds.indexOfCol(name)
 	if err != nil {
 		return []string{}, err
@@ -153,9 +153,9 @@ func (ds *Dataset) ExtractColumn(name string) ([]string, error) {
 	return resultCol, nil
 }
 
-// ModifyColumn changes the values of column 'name' according to 'f'.
+// ModifyCol changes the values of column 'name' according to 'f'.
 // 'val' contains the column value and 'row' is the current row number.
-func (ds *Dataset) ModifyColumn(name string, f func(val string, row int) string) error {
+func (ds *Dataset) ModifyCol(name string, f func(val string, row int) string) error {
 	index, err := ds.indexOfCol(name)
 	if err != nil {
 		return err

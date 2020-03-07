@@ -20,29 +20,29 @@ func main() {
 
 	ds := csvutil.New(records)
 
-	if err := ds.AddColumn([]string{"asd", "1", "2", "3"}, 1); err != nil {
+	if err := ds.AddCol([]string{"asd", "1", "2", "3"}, 1); err != nil {
 		log.Fatalln(err)
 	}
 
-	lastNames, err := ds.ExtractColumn("last_name")
+	lastNames, err := ds.ExtractCol("last_name")
 	if err != nil {
 		log.Fatalln(err)
 	}
 	log.Println(lastNames)
 
-	if err := ds.RenameColumn("username", "nick"); err != nil {
+	if err := ds.RenameCol("username", "nick"); err != nil {
 		log.Fatalln(err)
 	}
 
 	// log.Println(ds.Raw())
 
-	if err := ds.DeleteColumn("nick"); err != nil {
+	if err := ds.DeleteCol("nick"); err != nil {
 		log.Fatalln(err)
 	}
 
 	var addRowNumber = func(val string, i int) string { return fmt.Sprintf("%v (%v)", val, i) }
 
-	if err := ds.ModifyColumn("first_name", addRowNumber); err != nil {
+	if err := ds.ModifyCol("first_name", addRowNumber); err != nil {
 		log.Fatalln(err)
 	}
 

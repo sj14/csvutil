@@ -98,7 +98,7 @@ func TestNew(t *testing.T) {
 	}
 }
 
-func TestAddColumn(t *testing.T) {
+func TestAddCol(t *testing.T) {
 	testCases := []struct {
 		description string
 		init        [][]string
@@ -172,7 +172,7 @@ func TestAddColumn(t *testing.T) {
 	for _, tt := range testCases {
 		t.Run(tt.description, func(t *testing.T) {
 			ds := New(tt.init)
-			err := ds.AddColumn(tt.add, tt.index)
+			err := ds.AddCol(tt.add, tt.index)
 			require.NoError(t, err)
 
 			log.Printf("want: %v\ngot: %v\n", tt.want, ds.Raw())
