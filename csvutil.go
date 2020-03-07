@@ -7,14 +7,18 @@ import (
 	"io"
 )
 
+// Dataset contains the CSV content and eases modificating it.
 type Dataset struct {
 	data [][]string
 }
 
 var (
+	// ErrColNotFound is returned when a named column is not found.
 	ErrColNotFound = errors.New("column not found")
+	// ErrSameColName is returned when a named column exists multiple times.
 	ErrSameColName = errors.New("multiple columns with same name")
-	ErrColLen      = errors.New("length of columns differ")
+	// ErrColLen is returned when the length of a column to add differs from the already existing dataset column length.
+	ErrColLen = errors.New("length of columns differ")
 )
 
 // Equals checks if both datasets are the same.
@@ -72,7 +76,7 @@ func (ds *Dataset) DeleteCol(name string) error {
 		return err
 	}
 
-	for idxRow, _ := range ds.data {
+	for idxRow := range ds.data {
 		ds.data[idxRow] = append(ds.data[idxRow][:index], ds.data[idxRow][index+1:]...)
 	}
 	return nil
@@ -125,7 +129,7 @@ func (ds *Dataset) AddCol(column []string, index int) error {
 		return nil
 	}
 
-	for idxRow, _ := range ds.data {
+	for idxRow := range ds.data {
 		ds.data[idxRow] = append(ds.data[idxRow], "")
 		copy(ds.data[idxRow][index+1:], ds.data[idxRow][index:])
 		ds.data[idxRow][index] = column[idxRow]
@@ -187,7 +191,7 @@ func Delimiter(delimiter rune) option {
 	}
 }
 
-// UseCRLF is set to false by default. If set to true, the Writer ends each line with \r\n instead of \n.
+// UseCLRF is set to false by default. If set to true, the Writer ends each line with \r\n instead of \n.
 func UseCLRF(useCLRF bool) option {
 	return func(o *writeOptions) {
 		o.useCLRF = useCLRF

@@ -34,8 +34,6 @@ func main() {
 		log.Fatalln(err)
 	}
 
-	// log.Println(ds.Raw())
-
 	if err := ds.DeleteCol("nick"); err != nil {
 		log.Fatalln(err)
 	}
