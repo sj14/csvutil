@@ -46,7 +46,7 @@ func main() {
 		log.Fatalln(err)
 	}
 
-	if err := ds.Write(os.Stdout); err != nil {
+	if err := ds.Write(os.Stdout, csvutil.Delimiter('|'), csvutil.UseCLRF(true)); err != nil {
 		log.Fatalln(err)
 	}
 }

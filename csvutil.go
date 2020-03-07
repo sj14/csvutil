@@ -175,19 +175,50 @@ func (ds *Dataset) ModifyCol(name string, f func(val string, row int) string) er
 	return nil
 }
 
+type writeOptions struct {
+	delimiter rune
+	useCLRF   bool
+}
+
+type option func(*writeOptions)
+
+// Delimiter is the separator between each value (default: ',').
+func Delimiter(delimiter rune) option {
+	return func(o *writeOptions) {
+		o.delimiter = delimiter
+	}
+}
+
+// UseCRLF is set to false by default. If set to true, the Writer ends each line with \r\n instead of \n.
+func UseCLRF(useCLRF bool) option {
+	return func(o *writeOptions) {
+		o.useCLRF = useCLRF
+	}
+}
+
 // Write the dataset to the given writer.
-func (ds *Dataset) Write(writer io.Writer) error {
-	csvWriter := csv.NewWriter(writer) // output as option
+func (ds *Dataset) Write(writer io.Writer, opts ...option) error {
+	csvWriter := csv.NewWriter(writer)
 	defer csvWriter.Flush()
 
-	// w.Comma = // TODO
-	// w.UseCRLF
+	// default options
+	o := &writeOptions{
+		delimiter: ',',
+		useCLRF:   false,
+	}
+
+	// apply users options
+	for _, opt := range opts {
+		opt(o)
+	}
+
+	// pass options
+	csvWriter.Comma = o.delimiter
+	csvWriter.UseCRLF = o.useCLRF
 
 	if err := csvWriter.WriteAll(ds.data); err != nil {
 		return err
 	}
-
-	// TODO: flush or lock internal dataset?
 
 	return nil
 }
