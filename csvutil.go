@@ -111,8 +111,6 @@ func (ds *Dataset) AddRows(rows [][]string) error {
 // -1 adds the column at the last column
 // -2 adds the column as the second last column, and so on...
 func (ds *Dataset) AddCol(column []string, index int) error {
-	// TODO: name optional as we can have a csv without header
-	// TODO: index as option
 	if index < 0 {
 		index += len(ds.data[0]) + 1
 	}
