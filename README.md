@@ -5,7 +5,10 @@
 
 ## Examples
 
-**For all options please check the godoc.**
+For all options please check the godoc.
+The examples ignore all error handling.
+
+---
 
 Create a new dataset:
 
@@ -23,7 +26,7 @@ ds := csvutil.New(records)
 Write dataset:
 
 ```go
-err := ds.Write(os.Stdout)
+ds.Write(os.Stdout)
 ```
 
 ```text
@@ -65,9 +68,7 @@ Robert (3),3,Griesemer,gri
 Add write options:
 
 ```go
-if err := ds.Write(os.Stdout, csvutil.Delimiter('|'), csvutil.UseCLRF(true)); err != nil {
-    log.Fatalln(err)
-}
+ds.Write(os.Stdout, csvutil.Delimiter('|'), csvutil.UseCLRF(true))
 ```
 
 ```text
