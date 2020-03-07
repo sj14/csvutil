@@ -3,6 +3,7 @@ package csvutil
 import (
 	"encoding/csv"
 	"errors"
+	"fmt"
 	"io"
 )
 
@@ -11,8 +12,9 @@ type Dataset struct {
 }
 
 var (
-	ErrNoHeader       = errors.New("dataset is configured without header")
-	ErrColumnNotFound = errors.New("column not found")
+	ErrColNotFound = errors.New("column not found")
+	ErrSameColName = errors.New("multiple columns with same name")
+	ErrColLen      = errors.New("length of columns differ")
 )
 
 // Equals checks if both datasets are the same.
@@ -36,9 +38,6 @@ func Equals(datasetA, datasetB [][]string) bool {
 
 // New creates a new CSV dataset.
 func New(dataset [][]string) Dataset {
-	// dataset optional, can create an empty dataset
-	// TODO: option if it contains a header
-	// TODO: check for duplacate column names
 	var ds Dataset
 	ds.data = dataset
 	return ds
@@ -54,13 +53,13 @@ func (ds *Dataset) indexOfCol(name string) (int, error) {
 	for idxCol, col := range ds.data[0] {
 		if col == name {
 			if index != -1 {
-				return -1, errors.New("dataset contains several column with this name. aborting.")
+				return -1, fmt.Errorf("%w (%v)", ErrSameColName, name)
 			}
 			index = idxCol
 		}
 	}
 	if index == -1 {
-		return -1, ErrColumnNotFound // TODO: wrap error with 'name' as help
+		return -1, fmt.Errorf("%w (%v)", ErrColNotFound, name)
 	}
 
 	return index, nil
@@ -100,8 +99,8 @@ func (ds *Dataset) AddRows(rows [][]string) error {
 	if len(rows) == 0 {
 		return nil
 	}
-	if len(ds.data) > 0 && len(ds.data) != len(rows) {
-		return errors.New("number of rows doesn't match existing column length")
+	if len(ds.data) > 0 && len(ds.data[0]) != len(rows[0]) {
+		return ErrColLen
 	}
 
 	ds.data = append(ds.data, rows...)
@@ -119,7 +118,7 @@ func (ds *Dataset) AddCol(column []string, index int) error {
 	}
 
 	if len(ds.data) > 0 && len(column) != len(ds.data) {
-		return errors.New("column needs to have same length as existing data")
+		return ErrColLen
 	}
 
 	// no data so far

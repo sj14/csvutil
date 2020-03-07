@@ -1,7 +1,6 @@
 package csvutil
 
 import (
-	"log"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -174,10 +173,78 @@ func TestAddCol(t *testing.T) {
 			ds := New(tt.init)
 			err := ds.AddCol(tt.add, tt.index)
 			require.NoError(t, err)
-
-			log.Printf("want: %v\ngot: %v\n", tt.want, ds.Raw())
 			require.True(t, Equals(tt.want, ds.Raw()))
 		})
 	}
+}
 
+func TestAddRow(t *testing.T) {
+	testCases := []struct {
+		description string
+		init        [][]string
+		add         [][]string
+		want        [][]string
+		wantErr     error
+	}{
+		{
+			description: "add nothing",
+			init: [][]string{
+				[]string{"Row 1 Col 1", "Row 1 Col 2"},
+				[]string{"Row 2 Col 1", "Row 2 Col 2"},
+			},
+			add:     [][]string{[]string{}},
+			wantErr: ErrColLen,
+		},
+		{
+			description: "add nil",
+			init: [][]string{
+				[]string{"Row 1 Col 1", "Row 1 Col 2"},
+				[]string{"Row 2 Col 1", "Row 2 Col 2"},
+			},
+			add: nil,
+			want: [][]string{
+				[]string{"Row 1 Col 1", "Row 1 Col 2"},
+				[]string{"Row 2 Col 1", "Row 2 Col 2"},
+			}},
+		{
+			description: "add rows to nothing",
+			init:        nil,
+			add: [][]string{
+				[]string{"Row 1 Col 1", "Row 1 Col 2"},
+				[]string{"Row 2 Col 1", "Row 2 Col 2"},
+				[]string{"Row 3 Col 1", "Row 3 Col 2"},
+			},
+			want: [][]string{
+				[]string{"Row 1 Col 1", "Row 1 Col 2"},
+				[]string{"Row 2 Col 1", "Row 2 Col 2"},
+				[]string{"Row 3 Col 1", "Row 3 Col 2"},
+			},
+		},
+		{
+			description: "add single row to existing",
+			init: [][]string{
+				[]string{"Row 1 Col 1", "Row 1 Col 2"},
+				[]string{"Row 2 Col 1", "Row 2 Col 2"},
+			},
+			add: [][]string{[]string{"Row 3 Col 1", "Row 3 Col 2"}},
+			want: [][]string{
+				[]string{"Row 1 Col 1", "Row 1 Col 2"},
+				[]string{"Row 2 Col 1", "Row 2 Col 2"},
+				[]string{"Row 3 Col 1", "Row 3 Col 2"},
+			},
+		},
+	}
+
+	for _, tt := range testCases {
+		t.Run(tt.description, func(t *testing.T) {
+			ds := New(tt.init)
+			err := ds.AddRows(tt.add)
+			if tt.wantErr != nil {
+				require.EqualError(t, tt.wantErr, err.Error())
+				return
+			}
+			require.NoError(t, err)
+			require.True(t, Equals(tt.want, ds.Raw()))
+		})
+	}
 }
