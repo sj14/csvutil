@@ -2,15 +2,15 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"os"
 
 	"github.com/sj14/csvutil"
 )
 
+/////////////////////////////////////////////
+// The examples ignore all error handling! //
+/////////////////////////////////////////////
 func main() {
-	log.SetFlags(log.LstdFlags | log.Llongfile)
-
 	records := [][]string{
 		{"first_name", "last_name", "username"},
 		{"Rob", "Pike", "rob"},
@@ -20,31 +20,19 @@ func main() {
 
 	ds := csvutil.New(records)
 
-	if err := ds.AddCol([]string{"asd", "1", "2", "3"}, 1); err != nil {
-		log.Fatalln(err)
-	}
+	fmt.Println(ds.Raw())
 
-	lastNames, err := ds.ExtractCol("last_name")
-	if err != nil {
-		log.Fatalln(err)
-	}
-	log.Println(lastNames)
+	lastNames, _ := ds.ExtractCol("last_name")
+	fmt.Println(lastNames)
 
-	if err := ds.RenameCol("username", "nick"); err != nil {
-		log.Fatalln(err)
-	}
+	ds.AddCol([]string{"column_headline", "my ow 1", "my row 2", "my row 3"}, 1)
 
-	if err := ds.DeleteCol("nick"); err != nil {
-		log.Fatalln(err)
-	}
+	ds.RenameCol("username", "nick")
+
+	ds.DeleteCol("first_name")
 
 	var addRowNumber = func(val string, i int) string { return fmt.Sprintf("%v (%v)", val, i) }
+	ds.ModifyCol("first_name", addRowNumber)
 
-	if err := ds.ModifyCol("first_name", addRowNumber); err != nil {
-		log.Fatalln(err)
-	}
-
-	if err := ds.Write(os.Stdout, csvutil.Delimiter('|'), csvutil.UseCLRF(true)); err != nil {
-		log.Fatalln(err)
-	}
+	ds.Write(os.Stdout, csvutil.Delimiter('|'), csvutil.UseCLRF(true))
 }
