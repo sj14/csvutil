@@ -62,13 +62,13 @@ my first name 2,my last name 2,my nick 2
 ### Add a new column at index 1
 
 ```go
-ds.AddCol([]string{"column_headline", "my ow 1", "my row 2", "my row 3"}, 1)
+ds.AddCol([]string{"column_headline", "my row 1", "my row 2", "my row 3"}, 1)
 ds.Write(os.Stdout)
 ```
 
 ```text
 first_name,column_headline,last_name,username
-Rob,my ow 1,Pike,rob
+Rob,my row 1,Pike,rob
 Ken,my row 2,Thompson,ken
 Robert,my row 3,Griesemer,gri
 ```
@@ -119,10 +119,10 @@ ds.Write(os.Stdout)
 ```
 
 ```text
-first_name,asd,last_name,username
-Rob (1),1,Pike,rob
-Ken (2),2,Thompson,ken
-Robert (3),3,Griesemer,gri
+first_name,last_name,username
+Rob (1),Pike,rob
+Ken (2),Thompson,ken
+Robert (3),Griesemer,gri
 ```
 
 ### Write the dataset
