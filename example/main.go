@@ -11,7 +11,6 @@ import (
 // The examples ignore all error handling! //
 /////////////////////////////////////////////
 func main() {
-
 	a := [][]string{
 		{"a", "b", "c"},
 		{"d", "e", "f"},
@@ -41,15 +40,13 @@ func main() {
 		{"my first name 1", "my last name 1", "my nick 1"},
 		{"my first name 2", "my last name 2", "my nick 2"},
 	})
-	ds.Write(os.Stdout)
-	return
 
 	fmt.Println(ds.Raw())
 
 	lastNames, _ := ds.ExtractCol("last_name")
 	fmt.Println(lastNames)
 
-	ds.AddCol([]string{"column_headline", "my ow 1", "my row 2", "my row 3"}, 1)
+	ds.AddCol([]string{"column_headline", "my row 1", "my row 2", "my row 3"}, 1)
 
 	ds.RenameCol("username", "nick")
 
