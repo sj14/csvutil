@@ -249,6 +249,48 @@ func TestAddRow(t *testing.T) {
 	}
 }
 
+func TestRenameCol(t *testing.T) {
+	testCases := []struct {
+		description string
+		init        [][]string
+		old         string
+		new         string
+		want        [][]string
+		wantErr     error
+	}{
+		{
+			description: "rename col",
+			init: [][]string{
+				[]string{"Col 1", "Col 2", "Col 3"},
+				[]string{"Row 2 Col 1", "Row 2 Col 2", "Row 2 Col 3"},
+				[]string{"Row 3 Col 1", "Row 3 Col 2", "Row 3 Col 3"},
+			},
+			old: "Col 2",
+			new: "Middle Column",
+			want: [][]string{
+				[]string{"Col 1", "Middle Column", "Col 3"},
+				[]string{"Row 2 Col 1", "Row 2 Col 2", "Row 2 Col 3"},
+				[]string{"Row 3 Col 1", "Row 3 Col 2", "Row 3 Col 3"},
+			}, wantErr: nil,
+		},
+	}
+
+	for _, tt := range testCases {
+		t.Run(tt.description, func(t *testing.T) {
+			ds := New(tt.init)
+			err := ds.RenameCol(tt.old, tt.new)
+			if tt.wantErr != nil {
+				require.EqualError(t, tt.wantErr, err.Error())
+				return
+			}
+			require.NoError(t, err)
+			t.Log(tt.want)
+			t.Log(ds.Raw())
+			require.True(t, Equals(tt.want, ds.Raw()))
+		})
+	}
+}
+
 func TestMoveCol(t *testing.T) {
 	testCases := []struct {
 		description string
