@@ -43,8 +43,11 @@ func main() {
 
 	fmt.Println(ds.Raw())
 
-	lastNames, _ := ds.ExtractCol("last_name")
+	lastNames, _ := ds.GetCol("last_name")
 	fmt.Println(lastNames)
+
+	ds.MoveCol("first_name", 1)
+	fmt.Println(ds.Raw())
 
 	ds.AddCol([]string{"column_headline", "my row 1", "my row 2", "my row 3"}, 1)
 

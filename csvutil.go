@@ -93,6 +93,20 @@ func (ds *Dataset) RenameCol(old, new string) error {
 	return nil
 }
 
+// MoveCol moves the given column to index.
+func (ds *Dataset) MoveCol(name string, index int) error {
+	toMove, err := ds.GetCol(name)
+	if err != nil {
+		return err
+	}
+
+	if err := ds.DeleteCol(name); err != nil {
+		return err
+	}
+
+	return ds.AddCol(toMove, index)
+}
+
 // AddRow appends the given row to the dataset.
 func (ds *Dataset) AddRow(row []string) error {
 	return ds.AddRows([][]string{row})
@@ -138,8 +152,8 @@ func (ds *Dataset) AddCol(column []string, index int) error {
 	return nil
 }
 
-// ExtractCol returns the column with the given name.
-func (ds *Dataset) ExtractCol(name string) ([]string, error) {
+// GetCol returns the column with the given name.
+func (ds *Dataset) GetCol(name string) ([]string, error) {
 	index, err := ds.indexOfCol(name)
 	if err != nil {
 		return []string{}, err

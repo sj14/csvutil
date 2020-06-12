@@ -4,6 +4,12 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/sj14/csvutil)](https://goreportcard.com/report/github.com/sj14/csvutil)
 ![Action](https://github.com/sj14/csvutil/workflows/Go/badge.svg)
 
+## Installation
+
+```bash
+go get -u github.com/sj14/csvutil
+```
+
 ## Examples
 
 For all options please check the godoc. The examples ignore all error handling!
@@ -73,10 +79,10 @@ Ken,my row 2,Thompson,ken
 Robert,my row 3,Griesemer,gri
 ```
 
-### Extract Column
+### Get Column
 
 ```go
-lastNames, _ := ds.ExtractCol("last_name")
+lastNames, _ := ds.GetCol("last_name")
 fmt.Println(lastNames)
 ````
 
@@ -95,6 +101,19 @@ first_name,last_name,nick
 Rob,Pike,rob
 Ken,Thompson,ken
 Robert,Griesemer,gri
+```
+
+### Move Column
+
+```
+ds.MoveCol("first_name", 1)
+```
+
+```
+last_name,first_name,nick
+Pike,Rob,rob
+Thompson,Ken,ken
+Griesemer,Robert,gri
 ```
 
 ### Delete Column
