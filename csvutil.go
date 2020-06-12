@@ -1,4 +1,4 @@
-// Package csvutil provides helper functions to deal with CSV files.
+// Package csvutil provides helper functions to deal with CSV data.
 package csvutil
 
 import (
