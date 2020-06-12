@@ -52,7 +52,8 @@ func (ds *Dataset) Raw() [][]string {
 	return ds.data
 }
 
-func (ds *Dataset) indexOfCol(name string) (int, error) {
+// IndexOfCol returns the index of the given column.
+func (ds *Dataset) IndexOfCol(name string) (int, error) {
 	index := -1
 	for idxCol, col := range ds.data[0] {
 		if col == name {
@@ -71,7 +72,7 @@ func (ds *Dataset) indexOfCol(name string) (int, error) {
 
 // DeleteCol deletes the column with the given name.
 func (ds *Dataset) DeleteCol(name string) error {
-	index, err := ds.indexOfCol(name)
+	index, err := ds.IndexOfCol(name)
 	if err != nil {
 		return err
 	}
@@ -84,7 +85,7 @@ func (ds *Dataset) DeleteCol(name string) error {
 
 // RenameCol renames the header of column 'old' to 'new'.
 func (ds *Dataset) RenameCol(old, new string) error {
-	index, err := ds.indexOfCol(old)
+	index, err := ds.IndexOfCol(old)
 	if err != nil {
 		return err
 	}
@@ -154,7 +155,7 @@ func (ds *Dataset) AddCol(column []string, index int) error {
 
 // GetCol returns the column with the given name.
 func (ds *Dataset) GetCol(name string) ([]string, error) {
-	index, err := ds.indexOfCol(name)
+	index, err := ds.IndexOfCol(name)
 	if err != nil {
 		return []string{}, err
 	}
@@ -171,7 +172,7 @@ func (ds *Dataset) GetCol(name string) ([]string, error) {
 // ModifyCol changes the values of column 'name' according to 'f'.
 // 'val' contains the column value and 'row' is the current row number.
 func (ds *Dataset) ModifyCol(name string, f func(val string, row int) string) error {
-	index, err := ds.indexOfCol(name)
+	index, err := ds.IndexOfCol(name)
 	if err != nil {
 		return err
 	}
