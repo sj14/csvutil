@@ -22,37 +22,37 @@ func TestEquals(t *testing.T) {
 		{
 			description: "empty/empty",
 			datasetA:    [][]string{},
-			datasetB:    [][]string{[]string{}},
+			datasetB:    [][]string{{}},
 			expected:    false,
 		},
 		{
 			description: "empty",
-			datasetA:    [][]string{[]string{}},
-			datasetB:    [][]string{[]string{}},
+			datasetA:    [][]string{{}},
+			datasetB:    [][]string{{}},
 			expected:    true,
 		},
 		{
 			description: "happy",
-			datasetA:    [][]string{[]string{"A", "B", "C"}, []string{"1", "2", "3"}},
-			datasetB:    [][]string{[]string{"A", "B", "C"}, []string{"1", "2", "3"}},
+			datasetA:    [][]string{{"A", "B", "C"}, {"1", "2", "3"}},
+			datasetB:    [][]string{{"A", "B", "C"}, {"1", "2", "3"}},
 			expected:    true,
 		},
 		{
 			description: "fail/value",
-			datasetA:    [][]string{[]string{"A", "B", "C"}, []string{"1", "99", "3"}},
-			datasetB:    [][]string{[]string{"A", "B", "C"}, []string{"1", "2", "3"}},
+			datasetA:    [][]string{{"A", "B", "C"}, {"1", "99", "3"}},
+			datasetB:    [][]string{{"A", "B", "C"}, {"1", "2", "3"}},
 			expected:    false,
 		},
 		{
 			description: "fail/row/len",
-			datasetA:    [][]string{[]string{"A", "B", "C"}, []string{"1", "2", "3"}},
-			datasetB:    [][]string{[]string{"A", "B", "C"}},
+			datasetA:    [][]string{{"A", "B", "C"}, {"1", "2", "3"}},
+			datasetB:    [][]string{{"A", "B", "C"}},
 			expected:    false,
 		},
 		{
 			description: "fail/col/len",
-			datasetA:    [][]string{[]string{"A", "B", "C"}, []string{"1", "3", "3"}},
-			datasetB:    [][]string{[]string{"A", "B", "C"}, []string{"1", "2"}},
+			datasetA:    [][]string{{"A", "B", "C"}, {"1", "3", "3"}},
+			datasetB:    [][]string{{"A", "B", "C"}, {"1", "2"}},
 			expected:    false,
 		},
 	}
@@ -77,13 +77,13 @@ func TestNew(t *testing.T) {
 		},
 		{
 			description: "empty",
-			create:      [][]string{[]string{}},
+			create:      [][]string{{}},
 		},
 		{
 			description: "normal",
 			create: [][]string{
-				[]string{"Row 1 Col 1", "Row 1 Col 2"},
-				[]string{"Row 2 Col 1", "Row 2 Col 2"},
+				{"Row 1 Col 1", "Row 1 Col 2"},
+				{"Row 2 Col 1", "Row 2 Col 2"},
 			},
 		},
 	}
@@ -111,59 +111,59 @@ func TestAddCol(t *testing.T) {
 			add:         []string{"Row 1 Col 1", "Row 2 Col 1"},
 			index:       0,
 			want: [][]string{
-				[]string{"Row 1 Col 1", "Row 2 Col 1"},
+				{"Row 1 Col 1", "Row 2 Col 1"},
 			},
 		},
 		{
 			description: "add at beginning",
 			init: [][]string{
-				[]string{"Row 1 Col 1", "Row 1 Col 2"},
-				[]string{"Row 2 Col 1", "Row 2 Col 2"},
+				{"Row 1 Col 1", "Row 1 Col 2"},
+				{"Row 2 Col 1", "Row 2 Col 2"},
 			},
 			add:   []string{"Row 1 Col 0", "Row 2 Col 0"},
 			index: 0,
 			want: [][]string{
-				[]string{"Row 1 Col 0", "Row 1 Col 1", "Row 1 Col 2"},
-				[]string{"Row 2 Col 0", "Row 2 Col 1", "Row 2 Col 2"},
+				{"Row 1 Col 0", "Row 1 Col 1", "Row 1 Col 2"},
+				{"Row 2 Col 0", "Row 2 Col 1", "Row 2 Col 2"},
 			},
 		},
 		{
 			description: "add in-between",
 			init: [][]string{
-				[]string{"Row 1 Col 1", "Row 1 Col 2"},
-				[]string{"Row 2 Col 1", "Row 2 Col 2"},
+				{"Row 1 Col 1", "Row 1 Col 2"},
+				{"Row 2 Col 1", "Row 2 Col 2"},
 			},
 			add:   []string{"Row 1 Col 1.5", "Row 2 Col 1.5"},
 			index: 1,
 			want: [][]string{
-				[]string{"Row 1 Col 1", "Row 1 Col 1.5", "Row 1 Col 2"},
-				[]string{"Row 2 Col 1", "Row 2 Col 1.5", "Row 2 Col 2"},
+				{"Row 1 Col 1", "Row 1 Col 1.5", "Row 1 Col 2"},
+				{"Row 2 Col 1", "Row 2 Col 1.5", "Row 2 Col 2"},
 			},
 		},
 		{
 			description: "add at end",
 			init: [][]string{
-				[]string{"Row 1 Col 1", "Row 1 Col 2"},
-				[]string{"Row 2 Col 1", "Row 2 Col 2"},
+				{"Row 1 Col 1", "Row 1 Col 2"},
+				{"Row 2 Col 1", "Row 2 Col 2"},
 			},
 			add:   []string{"Row 1 Col 3", "Row 2 Col 3"},
 			index: 2,
 			want: [][]string{
-				[]string{"Row 1 Col 1", "Row 1 Col 2", "Row 1 Col 3"},
-				[]string{"Row 2 Col 1", "Row 2 Col 2", "Row 2 Col 3"},
+				{"Row 1 Col 1", "Row 1 Col 2", "Row 1 Col 3"},
+				{"Row 2 Col 1", "Row 2 Col 2", "Row 2 Col 3"},
 			},
 		},
 		{
 			description: "add at end/negative",
 			init: [][]string{
-				[]string{"Row 1 Col 1", "Row 1 Col 2"},
-				[]string{"Row 2 Col 1", "Row 2 Col 2"},
+				{"Row 1 Col 1", "Row 1 Col 2"},
+				{"Row 2 Col 1", "Row 2 Col 2"},
 			},
 			add:   []string{"Row 1 Col 3", "Row 2 Col 3"},
 			index: -1,
 			want: [][]string{
-				[]string{"Row 1 Col 1", "Row 1 Col 2", "Row 1 Col 3"},
-				[]string{"Row 2 Col 1", "Row 2 Col 2", "Row 2 Col 3"},
+				{"Row 1 Col 1", "Row 1 Col 2", "Row 1 Col 3"},
+				{"Row 2 Col 1", "Row 2 Col 2", "Row 2 Col 3"},
 			},
 		},
 	}
@@ -189,48 +189,48 @@ func TestAddRow(t *testing.T) {
 		{
 			description: "add nothing",
 			init: [][]string{
-				[]string{"Row 1 Col 1", "Row 1 Col 2"},
-				[]string{"Row 2 Col 1", "Row 2 Col 2"},
+				{"Row 1 Col 1", "Row 1 Col 2"},
+				{"Row 2 Col 1", "Row 2 Col 2"},
 			},
-			add:     [][]string{[]string{}},
+			add:     [][]string{{}},
 			wantErr: ErrColLen,
 		},
 		{
 			description: "add nil",
 			init: [][]string{
-				[]string{"Row 1 Col 1", "Row 1 Col 2"},
-				[]string{"Row 2 Col 1", "Row 2 Col 2"},
+				{"Row 1 Col 1", "Row 1 Col 2"},
+				{"Row 2 Col 1", "Row 2 Col 2"},
 			},
 			add: nil,
 			want: [][]string{
-				[]string{"Row 1 Col 1", "Row 1 Col 2"},
-				[]string{"Row 2 Col 1", "Row 2 Col 2"},
+				{"Row 1 Col 1", "Row 1 Col 2"},
+				{"Row 2 Col 1", "Row 2 Col 2"},
 			}},
 		{
 			description: "add rows to nothing",
 			init:        nil,
 			add: [][]string{
-				[]string{"Row 1 Col 1", "Row 1 Col 2"},
-				[]string{"Row 2 Col 1", "Row 2 Col 2"},
-				[]string{"Row 3 Col 1", "Row 3 Col 2"},
+				{"Row 1 Col 1", "Row 1 Col 2"},
+				{"Row 2 Col 1", "Row 2 Col 2"},
+				{"Row 3 Col 1", "Row 3 Col 2"},
 			},
 			want: [][]string{
-				[]string{"Row 1 Col 1", "Row 1 Col 2"},
-				[]string{"Row 2 Col 1", "Row 2 Col 2"},
-				[]string{"Row 3 Col 1", "Row 3 Col 2"},
+				{"Row 1 Col 1", "Row 1 Col 2"},
+				{"Row 2 Col 1", "Row 2 Col 2"},
+				{"Row 3 Col 1", "Row 3 Col 2"},
 			},
 		},
 		{
 			description: "add single row to existing",
 			init: [][]string{
-				[]string{"Row 1 Col 1", "Row 1 Col 2"},
-				[]string{"Row 2 Col 1", "Row 2 Col 2"},
+				{"Row 1 Col 1", "Row 1 Col 2"},
+				{"Row 2 Col 1", "Row 2 Col 2"},
 			},
-			add: [][]string{[]string{"Row 3 Col 1", "Row 3 Col 2"}},
+			add: [][]string{{"Row 3 Col 1", "Row 3 Col 2"}},
 			want: [][]string{
-				[]string{"Row 1 Col 1", "Row 1 Col 2"},
-				[]string{"Row 2 Col 1", "Row 2 Col 2"},
-				[]string{"Row 3 Col 1", "Row 3 Col 2"},
+				{"Row 1 Col 1", "Row 1 Col 2"},
+				{"Row 2 Col 1", "Row 2 Col 2"},
+				{"Row 3 Col 1", "Row 3 Col 2"},
 			},
 		},
 	}
@@ -261,16 +261,16 @@ func TestRenameCol(t *testing.T) {
 		{
 			description: "rename col",
 			init: [][]string{
-				[]string{"Col 1", "Col 2", "Col 3"},
-				[]string{"Row 2 Col 1", "Row 2 Col 2", "Row 2 Col 3"},
-				[]string{"Row 3 Col 1", "Row 3 Col 2", "Row 3 Col 3"},
+				{"Col 1", "Col 2", "Col 3"},
+				{"Row 2 Col 1", "Row 2 Col 2", "Row 2 Col 3"},
+				{"Row 3 Col 1", "Row 3 Col 2", "Row 3 Col 3"},
 			},
 			old: "Col 2",
 			new: "Middle Column",
 			want: [][]string{
-				[]string{"Col 1", "Middle Column", "Col 3"},
-				[]string{"Row 2 Col 1", "Row 2 Col 2", "Row 2 Col 3"},
-				[]string{"Row 3 Col 1", "Row 3 Col 2", "Row 3 Col 3"},
+				{"Col 1", "Middle Column", "Col 3"},
+				{"Row 2 Col 1", "Row 2 Col 2", "Row 2 Col 3"},
+				{"Row 3 Col 1", "Row 3 Col 2", "Row 3 Col 3"},
 			}, wantErr: nil,
 		},
 	}
@@ -303,16 +303,16 @@ func TestMoveCol(t *testing.T) {
 		{
 			description: "move col",
 			init: [][]string{
-				[]string{"Col 1", "Col 2", "Col 3"},
-				[]string{"Row 2 Col 1", "Row 2 Col 2", "Row 2 Col 3"},
-				[]string{"Row 3 Col 1", "Row 3 Col 2", "Row 3 Col 3"},
+				{"Col 1", "Col 2", "Col 3"},
+				{"Row 2 Col 1", "Row 2 Col 2", "Row 2 Col 3"},
+				{"Row 3 Col 1", "Row 3 Col 2", "Row 3 Col 3"},
 			},
 			toMove: "Col 1",
 			newIdx: 1,
 			want: [][]string{
-				[]string{"Col 2", "Col 1", "Col 3"},
-				[]string{"Row 2 Col 2", "Row 2 Col 1", "Row 2 Col 3"},
-				[]string{"Row 3 Col 2", "Row 3 Col 1", "Row 3 Col 3"},
+				{"Col 2", "Col 1", "Col 3"},
+				{"Row 2 Col 2", "Row 2 Col 1", "Row 2 Col 3"},
+				{"Row 3 Col 2", "Row 3 Col 1", "Row 3 Col 3"},
 			}, wantErr: nil,
 		},
 	}
